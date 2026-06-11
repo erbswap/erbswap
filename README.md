@@ -27,13 +27,109 @@ that's smaller and cheaper than adopting a framework — not to *be* a framework
 
 ---
 
+## How to use
+
+Two files. Two include lines. That's it.
+
+### 1. Copy two files
+
+| Path | What it is |
+|---|---|
+| `app/javascript/erbswap.js` | The library (under 200 lines, IIFE-wrapped, zero deps). |
+| `app/controllers/concerns/erbswap_renderable.rb` | One private method. |
+
+### 2. Wire them up
+
+```ruby
+# app/controllers/application_controller.rb
+class ApplicationController < ActionController::Base
+  include ErbswapRenderable
+end
+```
+
+```ruby
+# config/importmap.rb (if you're on Importmap)
+pin "erbswap", to: "erbswap.js"
+```
+
+```javascript
+// app/javascript/application.js
+import "erbswap"
+```
+
+If you're on Sprockets:
+
+```javascript
+// app/assets/javascripts/application.js
+//= require erbswap
+```
+
+Or just include it as a plain `<script>` tag — it's a self-executing IIFE that
+registers `window.erbswap` and document listeners. It will work either way.
+
+### 3. Write your first swap
+
+A partial that's stable across every state:
+
+```erb
+<%# app/views/widgets/_widget_initial.html.erb %>
+<div id="widget-frame">
+  <form action="<%= submit_widget_path %>" method="post"
+        data-erbswap-form="true"
+        data-erbswap-target="widget-frame"
+        data-erbswap-swap="replace">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <button type="submit" data-erbswap-loading-text="Processing…">Submit</button>
+  </form>
+</div>
+```
+
+```erb
+<%# app/views/widgets/_widget_success.html.erb %>
+<div id="widget-frame">
+  <p>It worked.</p>
+</div>
+```
+
+```ruby
+def submit_widget
+  render_erbswap(partial: "widgets/widget_success")
+rescue StandardError => e
+  render_erbswap(partial: "widgets/widget_error", locals: { message: e.message }, status: :unprocessable_entity)
+end
+```
+
+### 4. Write down the invariants
+
+Add a short section to your `CLAUDE.md`, `README`, or `ARCHITECTURE.md` listing
+the [four invariants](#the-four-invariants). Without an explicit ceiling, you
+will grow this into a 1,000-line internal framework. Make the ceiling visible
+so contributors know where the wall is.
+
+### 5. Add a system test per use case
+
+```ruby
+require "application_system_test_case"
+
+class WidgetsTest < ApplicationSystemTestCase
+  test "successful widget submit swaps the frame" do
+    visit widgets_path
+    click_button "Submit"
+    assert_text "It worked"
+  end
+end
+```
+
+One per swap target. Look at `test/system/` in this repo for templates.
+
+---
+
 ## Table of contents
 
-- [Try it in 60 seconds](#try-it-in-60-seconds)
+- [Try it in 60 seconds in your local](#try-it-in-60-seconds-in-your-local)
 - [The four invariants](#the-four-invariants)
 - [The three examples in this repo](#the-three-examples-in-this-repo)
 - [How it works](#how-it-works)
-- [Drop it into your own Rails app](#drop-it-into-your-own-rails-app)
 - [API reference](#api-reference)
 - [Single-flight pattern](#single-flight-pattern)
 - [When to graduate](#when-to-graduate)
@@ -44,7 +140,7 @@ that's smaller and cheaper than adopting a framework — not to *be* a framework
 
 ---
 
-## Try it in 60 seconds
+## Try it in 60 seconds in your local
 
 ```bash
 git clone https://github.com/erbswap/erbswap.git
@@ -179,103 +275,6 @@ erbswap.js: target.outerHTML = html (swap mode "replace")
    ↓
 The new HTML's inner forms are also picked up by the document listener
 ```
-
----
-
-## Drop it into your own Rails app
-
-Two files. Two include lines. That's it.
-
-### 1. Copy two files
-
-| Path | What it is |
-|---|---|
-| `app/javascript/erbswap.js` | The library (under 200 lines, IIFE-wrapped, zero deps). |
-| `app/controllers/concerns/erbswap_renderable.rb` | One private method. |
-
-### 2. Wire them up
-
-```ruby
-# app/controllers/application_controller.rb
-class ApplicationController < ActionController::Base
-  include ErbswapRenderable
-end
-```
-
-```ruby
-# config/importmap.rb (if you're on Importmap)
-pin "erbswap", to: "erbswap.js"
-```
-
-```javascript
-// app/javascript/application.js
-import "erbswap"
-```
-
-If you're on Sprockets:
-
-```javascript
-// app/assets/javascripts/application.js
-//= require erbswap
-```
-
-Or just include it as a plain `<script>` tag — it's a self-executing IIFE that
-registers `window.erbswap` and document listeners. It will work either way.
-
-### 3. Write your first swap
-
-A partial that's stable across every state:
-
-```erb
-<%# app/views/widgets/_widget_initial.html.erb %>
-<div id="widget-frame">
-  <form action="<%= submit_widget_path %>" method="post"
-        data-erbswap-form="true"
-        data-erbswap-target="widget-frame"
-        data-erbswap-swap="replace">
-    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-    <button type="submit" data-erbswap-loading-text="Processing…">Submit</button>
-  </form>
-</div>
-```
-
-```erb
-<%# app/views/widgets/_widget_success.html.erb %>
-<div id="widget-frame">
-  <p>It worked.</p>
-</div>
-```
-
-```ruby
-def submit_widget
-  render_erbswap(partial: "widgets/widget_success")
-rescue StandardError => e
-  render_erbswap(partial: "widgets/widget_error", locals: { message: e.message }, status: :unprocessable_entity)
-end
-```
-
-### 4. Write down the invariants
-
-Add a short section to your `CLAUDE.md`, `README`, or `ARCHITECTURE.md` listing
-the [four invariants](#the-four-invariants). Without an explicit ceiling, you
-will grow this into a 1,000-line internal framework. Make the ceiling visible
-so contributors know where the wall is.
-
-### 5. Add a system test per use case
-
-```ruby
-require "application_system_test_case"
-
-class WidgetsTest < ApplicationSystemTestCase
-  test "successful widget submit swaps the frame" do
-    visit widgets_path
-    click_button "Submit"
-    assert_text "It worked"
-  end
-end
-```
-
-One per swap target. Look at `test/system/` in this repo for templates.
 
 ---
 
