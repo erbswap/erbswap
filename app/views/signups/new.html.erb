@@ -1,0 +1,37 @@
+<% content_for :title, "Inline form validation — erbswap" %>
+
+<h2>Example 2 — Inline form validation</h2>
+
+<p class="example-intro">
+  An async username availability check. Type a name, click <em>Check
+  availability</em>, and a status indicator swaps in below the field.
+  Uses a <code>method="get"</code> form &mdash; query semantics, no CSRF needed.
+</p>
+
+<form action="<%= examples_check_username_signup_path %>"
+      method="get"
+      class="check-form"
+      data-erbswap-form="true"
+      data-erbswap-target="username-availability"
+      data-erbswap-swap="replace">
+  <label for="username">Username</label>
+  <input id="username" type="text" name="username" autocomplete="off" placeholder="try 'alice' or 'bob'">
+  <button type="submit"
+          class="button button--ghost"
+          data-erbswap-loading-text="Checking...">
+    Check availability
+  </button>
+</form>
+
+<%= render "signups/availability_initial" %>
+
+<details class="example-source">
+  <summary>What's happening?</summary>
+  <ol>
+    <li>The form has <code>method="get"</code>. <strong>erbswap</strong> encodes the form data into a query string instead of a body.</li>
+    <li>Click <em>Check availability</em>. The server inspects <code>params[:username]</code> and renders one of four partials.</li>
+    <li>All four state partials wrap in <code>&lt;div id="username-availability"&gt;</code>. The same id, every state &mdash; Invariant #1.</li>
+    <li>The server returns <code>422 Unprocessable Entity</code> for taken / invalid states. Status codes are just status codes; <strong>erbswap</strong> only treats non-2xx as a swap-the-error-template signal when <code>!response.ok</code>. (Try blanking the field for the empty case.)</li>
+    <li>Reserved names: <code><%= SignupsController::TAKEN_USERNAMES.join(", ") %></code></li>
+  </ol>
+</details>

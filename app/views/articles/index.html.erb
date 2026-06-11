@@ -1,0 +1,39 @@
+<% content_for :title, "Click-to-load — erbswap" %>
+
+<h2>Example 3 &mdash; Click-to-load</h2>
+
+<p class="example-intro">
+  A list of articles. Click <em>Show preview</em> to fetch and swap a preview
+  block in place. No form, no modal &mdash; just a click trigger via
+  <code>data-erbswap-action="load"</code>.
+</p>
+
+<ul class="article-list">
+  <% @articles.each do |article| %>
+    <li class="article">
+      <h3 class="article__title"><%= article[:title] %></h3>
+      <p class="article__snippet"><%= article[:snippet] %></p>
+
+      <div id="article-preview-<%= article[:id] %>" class="article__preview">
+        <button type="button"
+                class="button button--ghost"
+                data-erbswap-action="load"
+                data-erbswap-src="<%= examples_article_preview_path(article[:id]) %>"
+                data-erbswap-target="article-preview-<%= article[:id] %>"
+                data-erbswap-swap="replace">
+          Show preview
+        </button>
+      </div>
+    </li>
+  <% end %>
+</ul>
+
+<details class="example-source">
+  <summary>What's happening?</summary>
+  <ol>
+    <li>Each "Show preview" button has <code>data-erbswap-action="load"</code>. Clicking it triggers a <code>GET</code> to the article's preview URL.</li>
+    <li>Each article has its own preview frame: <code>id="article-preview-1"</code>, <code>...-2</code>, <code>...-3</code>. Frames are scoped per item; the page can have many.</li>
+    <li>The preview response wraps in the same id, so subsequent clicks would re-render in place. (Try refreshing to reset all of them at once.)</li>
+    <li>This is the simplest trigger. No form, no submit handler &mdash; just a button as a hyperlink with a swap target.</li>
+  </ol>
+</details>

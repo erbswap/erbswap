@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "erbswap — Rails ERB partials + 175-line vanilla JS" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <%= stylesheet_link_tag :app %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1 class="site-title"><%= link_to "erbswap", root_path %></h1>
+        <nav class="site-nav">
+          <%= link_to "Home", root_path %>
+          <%= link_to "Modal + form swap", examples_reports_path %>
+          <%= link_to "Inline validation", examples_new_signup_path %>
+          <%= link_to "Click-to-load", examples_articles_path %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <% if notice %><p class="alert alert--success"><%= notice %></p><% end %>
+      <% if alert %><p class="alert alert--error"><%= alert %></p><% end %>
+      <%= yield %>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          erbswap — a thin pattern, not a framework.
+          <a href="https://github.com/erbswap/erbswap">source &amp; docs</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

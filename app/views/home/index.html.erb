@@ -1,0 +1,58 @@
+<% content_for :title, "erbswap — async UX for Rails without growing your own framework" %>
+
+<section class="hero">
+  <h2>Server-driven UI for Rails, without a framework.</h2>
+  <p class="lead">
+    <strong>erbswap</strong> is a thin pattern: a Rails controller concern and just under 200 lines of vanilla JS.
+    Your server renders plain ERB partials. The browser does <code>fetch</code> + DOM swap. That's the whole thing.
+  </p>
+  <p>
+    Zero dependencies. Zero build step. No <code>npm</code>, no <code>hx-*</code> attributes,
+    no <code>&lt;turbo-frame&gt;</code> custom element. The point isn't to compete with HTMX or
+    Turbo &mdash; it's to give you a deliberately limited starting point with a clear
+    upgrade path the moment you outgrow it.
+  </p>
+</section>
+
+<section class="examples">
+  <h3>Try the examples</h3>
+  <ul class="example-list">
+    <li>
+      <h4><%= link_to "Example 1 — Modal + form swap", examples_reports_path %></h4>
+      <p>
+        Pattern A (form-driven swap) + Pattern B (opener-driven fresh fetch) combined.
+        Open the modal &rarr; pick a year &rarr; the result swaps in place. Demonstrates
+        the canonical <em>same-frame-id wrapper across every state</em> invariant.
+      </p>
+    </li>
+    <li>
+      <h4><%= link_to "Example 2 — Inline form validation", examples_new_signup_path %></h4>
+      <p>
+        A signup form where username availability is checked via async swap before final submit.
+        Demonstrates partial swap without a modal &mdash; pure inline interaction.
+      </p>
+    </li>
+    <li>
+      <h4><%= link_to "Example 3 — Click-to-load", examples_articles_path %></h4>
+      <p>
+        A list of articles where clicking &ldquo;Show preview&rdquo; fetches and swaps a
+        preview block in place. Demonstrates the <code>data-erbswap-action="load"</code>
+        click trigger.
+      </p>
+    </li>
+  </ul>
+</section>
+
+<section class="invariants">
+  <h3>The four invariants</h3>
+  <ol>
+    <li><strong>Same frame id, every state.</strong> The wrapper <code>&lt;div id="..."&gt;</code> is identical across initial/success/empty/error partials.</li>
+    <li><strong>Two swap modes only.</strong> <code>innerHTML</code> and <code>replace</code>. No <code>beforeend</code>, no positional swap.</li>
+    <li><strong>Single controller entry point.</strong> <code>render_erbswap(partial:, locals:, status:)</code>. No second helper.</li>
+    <li><strong>Out of scope.</strong> Out-of-band swap, history push, SSE, retry, abort. When you need these, move to HTMX or Turbo.</li>
+  </ol>
+  <p class="invariants__note">
+    The discipline is the value. Without these ceilings, this library would grow into a 1000-line
+    home-built framework &mdash; the exact NIH trap it exists to avoid.
+  </p>
+</section>
