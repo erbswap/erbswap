@@ -98,7 +98,7 @@ to 1,000 lines and you've reinvented HTMX, worse.
 
 | Path | Pattern | What it shows |
 |---|---|---|
-| `/examples/reports` | Modal + form swap | A `<dialog>` opener triggers a fresh fetch (Pattern B). Each year-button is a form whose response swaps the frame inline (Pattern A). Demonstrates the same-id-across-every-state invariant and the [single-flight CSS pattern](#single-flight-pattern). |
+| `/examples/tasks` | Modal + form swap | A `<dialog>` opener triggers a fresh fetch (Pattern B). Each task-button is a form whose response swaps the frame inline (Pattern A). Demonstrates the same-id-across-every-state invariant and the [single-flight CSS pattern](#single-flight-pattern). |
 | `/examples/signups/new` | Inline form validation | A username availability check using `method="get"` form semantics. No CSRF token needed. Demonstrates that a 422 response with a partial body is treated as a valid swap, not an error. |
 | `/examples/articles` | Click-to-load | A list of articles with per-row "Show preview" buttons using `data-erbswap-action="load"`. Demonstrates many independent frames on one page. |
 
@@ -128,20 +128,20 @@ It's *one method*. It calls Rails' built-in `render` with `layout: false`. The
 response is a plain HTML fragment.
 
 ```ruby
-class ReportsController < ApplicationController
-  def submit_year
-    year = params[:year].to_i
-    rows = lookup_rows(year)
+class TasksController < ApplicationController
+  def run
+    task_id = params[:task_id].to_i
+    result  = lookup_result(task_id)
 
-    if rows.present?
-      render_erbswap(partial: "reports/modal_success", locals: { year:, row_count: rows.size })
+    if result.present?
+      render_erbswap(partial: "tasks/modal_success", locals: { task_id:, item_count: result.size })
     else
-      render_erbswap(partial: "reports/modal_empty", locals: { year: })
+      render_erbswap(partial: "tasks/modal_empty", locals: { task_id: })
     end
   rescue StandardError => e
     render_erbswap(
-      partial: "reports/modal_error",
-      locals:  { message: e.message },
+      partial: "tasks/modal_error",
+      locals:  { task_id:, message: e.message },
       status:  :unprocessable_entity
     )
   end
@@ -163,17 +163,17 @@ Because the listeners live on `document`, swapped-in HTML is automatically
 ### A round trip
 
 ```
-User clicks year button
+User clicks task button
    ↓
 erbswap.js intercepts submit, sets loading state on button + form
    ↓
 fetch(form.action, { method: POST, body: FormData })
    ↓
-ReportsController#submit_year
+TasksController#run
    ↓
-render_erbswap(partial: "reports/modal_success", locals: { ... })
+render_erbswap(partial: "tasks/modal_success", locals: { ... })
    ↓
-Response body: <div id="report-frame">…success markup…</div>
+Response body: <div id="task-frame">…success markup…</div>
    ↓
 erbswap.js: target.outerHTML = html (swap mode "replace")
    ↓
@@ -346,14 +346,14 @@ it as `X-CSRF-Token` on `POST`/`PATCH`/`DELETE`/`PUT`. Rails' built-in
 
 ## Single-flight pattern
 
-When you have multiple sibling forms (e.g. four year-buttons), a user clicking
+When you have multiple sibling forms (e.g. four task-buttons), a user clicking
 two in rapid succession would fire two overlapping requests. The first response
 to arrive wins, the second clobbers it. Bad.
 
 erbswap solves this with **zero JavaScript** using CSS `:has()`:
 
 ```css
-.report-frame__actions:has(form.erbswap-form-loading) form:not(.erbswap-form-loading) {
+.task-frame__actions:has(form.erbswap-form-loading) form:not(.erbswap-form-loading) {
   display: none;
 }
 ```
@@ -407,8 +407,8 @@ Things to *not* do, in increasing order of damage:
 
 - **Partial without a frame wrapper.** Always `<div id="…">`. Without it the
   next swap has no target.
-- **Different `id` per state.** Initial state uses `report-frame`, success uses
-  `report-result`. The next swap fails because the new target isn't reachable.
+- **Different `id` per state.** Initial state uses `task-frame`, success uses
+  `task-result`. The next swap fails because the new target isn't reachable.
   All four states must use the *same* id.
 - **Domain logic in `erbswap.js`.** The library is transport only. Business
   logic belongs in your controllers and services.

@@ -1,0 +1,28 @@
+<div id="task-frame" class="task-frame">
+  <h3 class="task-frame__heading">Pick a task to run</h3>
+
+  <div class="task-frame__actions">
+    <% tasks.each do |task_id| %>
+      <form action="<%= examples_tasks_run_path %>"
+            method="post"
+            data-erbswap-form="true"
+            data-erbswap-target="task-frame"
+            data-erbswap-swap="replace">
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <%= hidden_field_tag :task_id, task_id %>
+        <button type="submit"
+                class="button button--block"
+                data-erbswap-loading-text="Running Task <%= task_id %>...">
+          Run Task <%= task_id %>
+        </button>
+      </form>
+    <% end %>
+  </div>
+
+  <p class="task-frame__hint">
+    Try them all. <strong>Task 4</strong> raises an error.
+    <strong>Task 3</strong> has no result and shows the empty state.
+    Notice how clicking any button hides the siblings &mdash; that's
+    the single-flight CSS pattern, zero JS.
+  </p>
+</div>

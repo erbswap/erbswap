@@ -3,9 +3,9 @@ Rails.application.routes.draw do
 
   scope "/examples", as: :examples do
     # Example 1 — modal + form swap
-    get  "reports",                  to: "reports#index",        as: :reports
-    get  "reports/modal_body",       to: "reports#modal_body",   as: :reports_modal_body
-    post "reports/submit_year",      to: "reports#submit_year",  as: :reports_submit_year
+    get  "tasks",                    to: "tasks#index",          as: :tasks
+    get  "tasks/modal_body",         to: "tasks#modal_body",     as: :tasks_modal_body
+    post "tasks/run",                to: "tasks#run",            as: :tasks_run
 
     # Example 2 — inline form validation
     get  "signups/new",              to: "signups#new",          as: :new_signup

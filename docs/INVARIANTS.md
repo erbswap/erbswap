@@ -15,22 +15,22 @@ same `<div id="...">` as every other state's partial.
 
 ```erb
 <%# _modal_initial.html.erb %>
-<div id="report-frame">
+<div id="task-frame">
   <%# initial markup %>
 </div>
 
 <%# _modal_success.html.erb %>
-<div id="report-frame">
+<div id="task-frame">
   <%# success markup %>
 </div>
 
 <%# _modal_empty.html.erb %>
-<div id="report-frame">
+<div id="task-frame">
   <%# empty markup %>
 </div>
 
 <%# _modal_error.html.erb %>
-<div id="report-frame">
+<div id="task-frame">
   <%# error markup %>
 </div>
 ```
@@ -38,13 +38,13 @@ same `<div id="...">` as every other state's partial.
 ### Why
 
 A target is a function of two things: the markup that introduced it (so
-something on the page declares `data-erbswap-target="report-frame"`) and the
+something on the page declares `data-erbswap-target="task-frame"`) and the
 markup that responds to it (so the swap response can find an element with
-`id="report-frame"` to swap into or replace).
+`id="task-frame"` to swap into or replace).
 
 With `swap="replace"` (the recommended mode), the response *becomes* the
 target. The next swap then needs the same id to find its next target. If state
-A uses `report-frame` and state B uses `report-result`, the second swap fails
+A uses `task-frame` and state B uses `task-result`, the second swap fails
 silently because the target it was promised no longer exists.
 
 ### How to enforce
