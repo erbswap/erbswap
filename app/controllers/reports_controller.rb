@@ -13,6 +13,8 @@ class ReportsController < ApplicationController
   end
 
   def submit_year
+    sleep 1.5 unless Rails.env.test?
+
     year = params[:year].to_i
 
     raise StandardError, "Service temporarily unavailable for #{year}." if year == 2025
