@@ -477,5 +477,6 @@ MIT. See [LICENSE](LICENSE).
 
 Built by Jinsun Lim.
 
-PRs and forks welcome. The one PR the maintainer will reject without comment is
-"please add feature X" where X is on the [out-of-scope list](#the-four-invariants).
+Fork freely — copy, vendor, or fork under MIT. PRs against this repo are not
+being reviewed; treat this as a snapshot demo, not an actively maintained
+library. See [CONTRIBUTING.md](CONTRIBUTING.md).
