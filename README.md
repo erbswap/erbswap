@@ -27,7 +27,7 @@ that's smaller and cheaper than adopting a framework — not to *be* a framework
 
 ---
 
-## How to use
+# How to use
 
 Two files. Two include lines. That's it.
 
@@ -121,6 +121,17 @@ end
 ```
 
 One per swap target. Look at `test/system/` in this repo for templates.
+
+### What else to read
+
+The five steps above get you to a working integration. For anything beyond
+the first swap, these sections in the rest of this README are the reference:
+
+- [**API reference**](#api-reference) — every data attribute, the `window.erbswap.load()` options, dispatched events, CSS hooks, CSRF behavior.
+- [**The four invariants**](#the-four-invariants) — the load-bearing rules. Read these before you write your second swap.
+- [**Anti-patterns**](#anti-patterns) — things to *not* do.
+- [**Single-flight pattern**](#single-flight-pattern) — multi-form race prevention with CSS `:has()`.
+- [**When to graduate**](#when-to-graduate) — signals that you've outgrown erbswap.
 
 ---
 
