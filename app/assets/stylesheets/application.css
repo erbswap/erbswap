@@ -117,6 +117,18 @@ code {
   gap: 0.75rem;
   margin-top: 1.5rem;
 }
+.intro__notice {
+  background: var(--color-warning-bg);
+  border-left: 3px solid var(--color-warning-border);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  color: var(--color-warning-text);
+  margin-top: 1.5rem;
+}
+.intro__notice strong {
+  color: var(--color-warning-text);
+}
 
 /* Home — How to use */
 .how-to-use__title {
