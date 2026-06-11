@@ -2,6 +2,9 @@
 
 **Server-driven UI for Rails, without growing your own framework.**
 
+🌐 **Live demo:** <https://erbswap.onrender.com>
+(Free tier — first hit after idle may cold-start for ~30 seconds.)
+
 A Rails controller concern and ~195 lines of dependency-free vanilla JavaScript.
 Your server renders plain ERB partials. The browser does `fetch` + DOM swap.
 That's the whole pattern.
@@ -461,8 +464,7 @@ MIT. See [LICENSE](LICENSE).
 
 ## Credits
 
-Distilled from production usage at [Flender](https://www.flender.ie) (P2P
-lending, Ireland) in the public lender dashboard's tax report request flow.
+Built by Jinsun Lim.
 
 PRs and forks welcome. The one PR the maintainer will reject without comment is
 "please add feature X" where X is on the [out-of-scope list](#the-four-invariants).
