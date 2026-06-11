@@ -69,12 +69,35 @@ registers `window.erbswap` and document listeners. It will work either way.
 
 ### 3. Write your first swap
 
-A partial that's stable across every state:
+The minimum that actually runs end-to-end. Five small pieces.
+
+```ruby
+# config/routes.rb
+resources :widgets, only: [:index] do
+  collection { post :submit }
+end
+```
+
+```ruby
+# app/controllers/widgets_controller.rb
+class WidgetsController < ApplicationController
+  def index; end
+
+  def submit
+    render_erbswap(partial: "widgets/widget_success")
+  end
+end
+```
+
+```erb
+<%# app/views/widgets/index.html.erb %>
+<%= render "widgets/widget_initial" %>
+```
 
 ```erb
 <%# app/views/widgets/_widget_initial.html.erb %>
 <div id="widget-frame">
-  <form action="<%= submit_widget_path %>" method="post"
+  <form action="<%= submit_widgets_path %>" method="post"
         data-erbswap-form="true"
         data-erbswap-target="widget-frame"
         data-erbswap-swap="replace">
@@ -91,13 +114,7 @@ A partial that's stable across every state:
 </div>
 ```
 
-```ruby
-def submit_widget
-  render_erbswap(partial: "widgets/widget_success")
-rescue StandardError => e
-  render_erbswap(partial: "widgets/widget_error", locals: { message: e.message }, status: :unprocessable_entity)
-end
-```
+Visit `/widgets` &rarr; click *Submit* &rarr; *It worked.* swaps in. No page reload.
 
 ### 4. Write down the invariants
 
@@ -106,25 +123,9 @@ the [four invariants](#the-four-invariants). Without an explicit ceiling, you
 will grow this into a 1,000-line internal framework. Make the ceiling visible
 so contributors know where the wall is.
 
-### 5. Add a system test per use case
-
-```ruby
-require "application_system_test_case"
-
-class WidgetsTest < ApplicationSystemTestCase
-  test "successful widget submit swaps the frame" do
-    visit widgets_path
-    click_button "Submit"
-    assert_text "It worked"
-  end
-end
-```
-
-One per swap target. Look at `test/system/` in this repo for templates.
-
 ### What else to read
 
-The five steps above get you to a working integration. For anything beyond
+The four steps above get you to a working integration. For anything beyond
 the first swap, these sections in the rest of this README are the reference:
 
 - [**API reference**](#api-reference) — every data attribute, the `window.erbswap.load()` options, dispatched events, CSS hooks, CSRF behavior.
